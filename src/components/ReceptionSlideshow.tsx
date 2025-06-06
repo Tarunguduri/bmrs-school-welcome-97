@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 
 const ReceptionSlideshow = () => {
@@ -27,94 +26,79 @@ const ReceptionSlideshow = () => {
     return shuffled;
   };
 
-  // Function to generate file paths for images and videos
-  const generateMediaPaths = useCallback(() => {
-    // Generate paths for images (assuming you'll have slide1.png to slide50.png)
-    const imagePaths = [];
-    for (let i = 1; i <= 50; i++) {
-      imagePaths.push({
-        type: 'image',
-        src: `/images/slides/slide${i}.png`,
-        alt: `BMRS School Activity ${i}`,
-        fallback: `/images/slide${i}.png` // fallback to existing structure
-      });
-      
-      // Add common image extensions
-      imagePaths.push({
-        type: 'image',
-        src: `/images/slides/slide${i}.jpg`,
-        alt: `BMRS School Activity ${i}`,
-        fallback: `/images/slide${i}.jpg`
-      });
-      
-      imagePaths.push({
-        type: 'image',
-        src: `/images/slides/slide${i}.jpeg`,
-        alt: `BMRS School Activity ${i}`,
-        fallback: `/images/slide${i}.jpeg`
-      });
-    }
-
-    // Generate paths for videos (assuming you'll have video1.mp4 to video20.mp4)
-    const videoPaths = [];
-    for (let i = 1; i <= 20; i++) {
-      videoPaths.push({
-        type: 'video',
-        src: `/videos/video${i}.mp4`,
-        alt: `BMRS School Video ${i}`,
-        fallback: `https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_${i}mb.mp4`
-      });
-      
-      // Add other video formats
-      videoPaths.push({
-        type: 'video',
-        src: `/videos/video${i}.webm`,
-        alt: `BMRS School Video ${i}`,
-        fallback: `https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_${i}mb.mp4`
-      });
-    }
-
-    return { imagePaths, videoPaths };
-  }, []);
-
-  // Function to check if media file exists
-  const checkMediaExists = async (path) => {
+  // Function to check if media file exists with timeout
+  const checkMediaExists = async (path, timeout = 3000) => {
     try {
-      const response = await fetch(path, { method: 'HEAD' });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      const response = await fetch(path, { 
+        method: 'HEAD',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       return response.ok;
     } catch {
       return false;
     }
   };
 
-  // Function to load available media files
+  // Function to load available media files with faster fallback
   const loadAvailableMedia = useCallback(async () => {
-    const { imagePaths, videoPaths } = generateMediaPaths();
+    console.log('Starting to load media files...');
     
-    // Check which images exist
-    const availableImages = [];
-    for (const image of imagePaths) {
-      const exists = await checkMediaExists(image.src);
-      if (exists) {
-        availableImages.push(image);
-      } else if (image.fallback && await checkMediaExists(image.fallback)) {
-        availableImages.push({ ...image, src: image.fallback });
+    // First, try to load from slides folder
+    const slidesImages = [];
+    const videosArray = [];
+    
+    // Check for images in slides folder (limit to 20 for faster loading)
+    for (let i = 1; i <= 20; i++) {
+      const extensions = ['png', 'jpg', 'jpeg'];
+      for (const ext of extensions) {
+        const imagePath = `/images/slides/slide${i}.${ext}`;
+        try {
+          const exists = await checkMediaExists(imagePath, 2000); // 2 second timeout
+          if (exists) {
+            slidesImages.push({
+              type: 'image',
+              src: imagePath,
+              alt: `BMRS School Activity ${i}`
+            });
+            break; // Found one format, move to next number
+          }
+        } catch (error) {
+          console.log(`Could not check ${imagePath}`);
+        }
       }
     }
 
-    // Check which videos exist
-    const availableVideos = [];
-    for (const video of videoPaths) {
-      const exists = await checkMediaExists(video.src);
-      if (exists) {
-        availableVideos.push(video);
-      } else if (video.fallback) {
-        availableVideos.push({ ...video, src: video.fallback });
+    // Check for videos (limit to 10 for faster loading)
+    for (let i = 1; i <= 10; i++) {
+      const extensions = ['mp4', 'webm'];
+      for (const ext of extensions) {
+        const videoPath = `/videos/video${i}.${ext}`;
+        try {
+          const exists = await checkMediaExists(videoPath, 2000);
+          if (exists) {
+            videosArray.push({
+              type: 'video',
+              src: videoPath,
+              alt: `BMRS School Video ${i}`
+            });
+            break;
+          }
+        } catch (error) {
+          console.log(`Could not check ${videoPath}`);
+        }
       }
     }
+
+    console.log(`Found ${slidesImages.length} images and ${videosArray.length} videos in slides/videos folders`);
 
     // If no custom media found, use existing slides
-    if (availableImages.length === 0) {
+    if (slidesImages.length === 0) {
+      console.log('No custom slides found, using default slides');
       const existingImages = [
         { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
         { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' },
@@ -136,23 +120,12 @@ const ReceptionSlideshow = () => {
         { type: 'image', src: '/images/slide10.png', alt: 'BMRS Grammar High School promotional banner' },
         { type: 'image', src: '/images/slide11.png', alt: 'BMRS SSC Toppers 2024-2025 congratulations' }
       ];
-      availableImages.push(...existingImages);
-    }
-
-    if (availableVideos.length === 0) {
-      const existingVideos = [
-        { type: 'video', src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4', alt: 'BMRS School Activities Video 1' },
-        { type: 'video', src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4', alt: 'BMRS School Activities Video 2' },
-        { type: 'video', src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4', alt: 'BMRS School Activities Video 3' },
-        { type: 'video', src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_7mb.mp4', alt: 'BMRS School Activities Video 4' },
-        { type: 'video', src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_10mb.mp4', alt: 'BMRS School Activities Video 5' }
-      ];
-      availableVideos.push(...existingVideos);
+      slidesImages.push(...existingImages);
     }
 
     // Shuffle both arrays for randomness
-    const shuffledImages = shuffleArray(availableImages);
-    const shuffledVideos = shuffleArray(availableVideos);
+    const shuffledImages = shuffleArray(slidesImages);
+    const shuffledVideos = shuffleArray(videosArray);
 
     // Create combined slides with videos after every 4 images
     const combined = [];
@@ -161,7 +134,7 @@ const ReceptionSlideshow = () => {
     for (let i = 0; i < shuffledImages.length; i++) {
       combined.push(shuffledImages[i]);
       
-      // Add video after every 4 images
+      // Add video after every 4 images if videos are available
       if ((i + 1) % 4 === 0 && videoIndex < shuffledVideos.length) {
         combined.push(shuffledVideos[videoIndex]);
         videoIndex++;
@@ -169,18 +142,56 @@ const ReceptionSlideshow = () => {
     }
     
     // Shuffle the final combined array for maximum randomness
-    return shuffleArray(combined);
-  }, [generateMediaPaths]);
+    const finalSlides = shuffleArray(combined);
+    console.log(`Final slideshow has ${finalSlides.length} slides`);
+    return finalSlides;
+  }, []);
 
   useEffect(() => {
     const initializeSlideshow = async () => {
-      const loadedSlides = await loadAvailableMedia();
-      setSlides(loadedSlides);
-      setIsLoaded(true);
-      console.log(`Loaded ${loadedSlides.length} slides for slideshow`);
+      try {
+        console.log('Initializing slideshow...');
+        const loadedSlides = await loadAvailableMedia();
+        
+        if (loadedSlides.length > 0) {
+          setSlides(loadedSlides);
+          setIsLoaded(true);
+          console.log(`Successfully loaded ${loadedSlides.length} slides for slideshow`);
+        } else {
+          console.error('No slides could be loaded');
+          // Force load with default slides if nothing else works
+          setSlides([
+            { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
+            { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' }
+          ]);
+          setIsLoaded(true);
+        }
+      } catch (error) {
+        console.error('Error initializing slideshow:', error);
+        // Fallback to basic slides
+        setSlides([
+          { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
+          { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' }
+        ]);
+        setIsLoaded(true);
+      }
     };
 
+    // Add a timeout to prevent infinite loading
+    const loadingTimeout = setTimeout(() => {
+      if (!isLoaded) {
+        console.log('Loading timeout - forcing slideshow to start with default slides');
+        setSlides([
+          { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
+          { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' }
+        ]);
+        setIsLoaded(true);
+      }
+    }, 10000); // 10 second timeout
+
     initializeSlideshow();
+
+    return () => clearTimeout(loadingTimeout);
   }, [loadAvailableMedia]);
 
   useEffect(() => {
@@ -194,8 +205,8 @@ const ReceptionSlideshow = () => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
         setNextSlide((prev) => (prev + 1) % slides.length);
         setIsTransitioning(false);
-      }, 500);
-    }, 5000); // 5 seconds per slide
+      }, 800); // Increased transition time for smoother animations
+    }, 6000); // 6 seconds per slide
 
     return () => clearInterval(interval);
   }, [slides.length]);
@@ -228,6 +239,9 @@ const ReceptionSlideshow = () => {
             <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce animation-delay-200"></div>
             <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce animation-delay-400"></div>
           </div>
+          <p className="text-sm text-gray-500 mt-4">
+            Scanning for images and videos...
+          </p>
         </div>
       </div>
     );
@@ -254,15 +268,15 @@ const ReceptionSlideshow = () => {
     if (isTransitioning && isNext) {
       switch (animation) {
         case 'slideLeft':
-          return 'opacity-100 scale-100 translate-x-0 transition-all duration-1000 ease-out';
+          return 'opacity-100 scale-100 translate-x-0 transition-all duration-[1200ms] ease-out';
         case 'slideRight':
-          return 'opacity-100 scale-100 -translate-x-0 transition-all duration-1000 ease-out';
+          return 'opacity-100 scale-100 -translate-x-0 transition-all duration-[1200ms] ease-out';
         case 'zoom':
-          return 'opacity-100 scale-110 transition-all duration-1000 ease-out';
+          return 'opacity-100 scale-110 transition-all duration-[1200ms] ease-out';
         case 'blur':
-          return 'opacity-100 scale-100 transition-all duration-1000 ease-out filter blur-0';
+          return 'opacity-100 scale-100 transition-all duration-[1200ms] ease-out filter blur-0';
         default:
-          return 'opacity-100 scale-100 transition-all duration-1000 ease-out';
+          return 'opacity-100 scale-100 transition-all duration-[1200ms] ease-out';
       }
     }
     
@@ -270,24 +284,24 @@ const ReceptionSlideshow = () => {
       switch (animation) {
         case 'slideLeft':
           return isTransitioning 
-            ? 'opacity-0 scale-100 -translate-x-full transition-all duration-1000 ease-out'
-            : 'opacity-100 scale-100 translate-x-0 transition-all duration-1000 ease-out';
+            ? 'opacity-0 scale-100 -translate-x-full transition-all duration-[1200ms] ease-out'
+            : 'opacity-100 scale-100 translate-x-0 transition-all duration-[1200ms] ease-out';
         case 'slideRight':
           return isTransitioning 
-            ? 'opacity-0 scale-100 translate-x-full transition-all duration-1000 ease-out'
-            : 'opacity-100 scale-100 translate-x-0 transition-all duration-1000 ease-out';
+            ? 'opacity-0 scale-100 translate-x-full transition-all duration-[1200ms] ease-out'
+            : 'opacity-100 scale-100 translate-x-0 transition-all duration-[1200ms] ease-out';
         case 'zoom':
           return isTransitioning 
-            ? 'opacity-0 scale-75 transition-all duration-1000 ease-out'
-            : 'opacity-100 scale-100 transition-all duration-1000 ease-out';
+            ? 'opacity-0 scale-75 transition-all duration-[1200ms] ease-out'
+            : 'opacity-100 scale-100 transition-all duration-[1200ms] ease-out';
         case 'blur':
           return isTransitioning 
-            ? 'opacity-0 scale-100 transition-all duration-1000 ease-out filter blur-lg'
-            : 'opacity-100 scale-100 transition-all duration-1000 ease-out filter blur-0';
+            ? 'opacity-0 scale-100 transition-all duration-[1200ms] ease-out filter blur-lg'
+            : 'opacity-100 scale-100 transition-all duration-[1200ms] ease-out filter blur-0';
         default:
           return isTransitioning 
-            ? 'opacity-0 scale-95 transition-all duration-1000 ease-out'
-            : 'opacity-100 scale-100 transition-all duration-1000 ease-out';
+            ? 'opacity-0 scale-95 transition-all duration-[1200ms] ease-out'
+            : 'opacity-100 scale-100 transition-all duration-[1200ms] ease-out';
       }
     }
     
@@ -296,30 +310,37 @@ const ReceptionSlideshow = () => {
 
   return (
     <div className="fixed inset-0 bg-black overflow-hidden">
-      {/* Animated Background Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-purple-900/10 animate-pulse"></div>
+      {/* Enhanced Animated Background Overlay */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-purple-900/10 animate-pulse"></div>
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500/5 rounded-full animate-bounce animation-delay-0"></div>
+          <div className="absolute top-20 right-20 w-24 h-24 bg-purple-500/5 rounded-full animate-bounce animation-delay-1000"></div>
+          <div className="absolute bottom-20 left-20 w-20 h-20 bg-pink-500/5 rounded-full animate-bounce animation-delay-2000"></div>
+        </div>
+      </div>
       
-      {/* Enhanced School Logo Overlay with animations */}
+      {/* Enhanced School Logo Overlay with more animations */}
       <div className="absolute top-8 left-8 z-20 animate-fade-in">
-        <div className="w-24 h-24 rounded-full bg-white/95 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center hover:scale-110 transition-all duration-300 ring-4 ring-white/50">
+        <div className="w-24 h-24 rounded-full bg-white/95 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center hover:scale-110 transition-all duration-500 ring-4 ring-white/50 animate-pulse">
           <img 
             src="/lovable-uploads/e4807246-51a8-4ba1-97cb-f11ee4b3fe66.png"
             alt="BMRS Schools Logo"
-            className="w-full h-full object-cover object-center transition-transform duration-300 hover:rotate-12"
+            className="w-full h-full object-cover object-center transition-transform duration-500 hover:rotate-12"
           />
         </div>
       </div>
 
-      {/* Slide Counter */}
-      <div className="absolute top-8 right-8 z-20 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg animate-fade-in">
+      {/* Enhanced Slide Counter with animation */}
+      <div className="absolute top-8 right-8 z-20 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg animate-fade-in hover:scale-105 transition-all duration-300">
         <span className="text-sm font-medium text-gray-800">
           {currentSlide + 1} / {slides.length}
         </span>
       </div>
 
-      {/* Enhanced Welcome Message Overlay */}
+      {/* Enhanced Welcome Message Overlay with more animations */}
       <div className="absolute bottom-8 left-8 right-8 z-20 text-center animate-fade-in animation-delay-500">
-        <div className="bg-white/95 backdrop-blur-md rounded-3xl px-8 py-6 shadow-2xl max-w-2xl mx-auto border border-white/50 hover:scale-105 transition-all duration-500">
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl px-8 py-6 shadow-2xl max-w-2xl mx-auto border border-white/50 hover:scale-105 transition-all duration-500 animate-pulse">
           <h2 className="text-3xl font-bold text-gray-800 mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Welcome to BMRS Group of Schools
           </h2>
@@ -334,7 +355,7 @@ const ReceptionSlideshow = () => {
         </div>
       </div>
 
-      {/* Enhanced Slideshow Container */}
+      {/* Enhanced Slideshow Container with better animations */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
           <div
@@ -346,7 +367,7 @@ const ReceptionSlideshow = () => {
                 <img
                   src={slide.src}
                   alt={slide.alt}
-                  className="w-full h-full object-cover transition-transform duration-[10s] ease-linear group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-[12s] ease-linear group-hover:scale-105"
                   loading="lazy"
                   onError={(e) => {
                     console.log(`Failed to load image: ${slide.src}`);
@@ -354,13 +375,14 @@ const ReceptionSlideshow = () => {
                     target.style.display = 'none';
                   }}
                 />
-                {/* Animated gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 opacity-60"></div>
-                {/* Floating particles effect */}
+                {/* Enhanced animated gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 opacity-60 animate-pulse"></div>
+                {/* Enhanced floating particles effect */}
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-bounce animation-delay-0"></div>
                   <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white/40 rounded-full animate-bounce animation-delay-1000"></div>
                   <div className="absolute bottom-1/4 left-1/2 w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce animation-delay-2000"></div>
+                  <div className="absolute top-1/2 left-1/6 w-1 h-1 bg-white/25 rounded-full animate-bounce animation-delay-3000"></div>
                 </div>
               </div>
             ) : (
@@ -378,11 +400,11 @@ const ReceptionSlideshow = () => {
                     target.style.display = 'none';
                   }}
                 />
-                {/* Video overlay with subtle animation */}
+                {/* Enhanced video overlay with animation */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-purple-900/10 animate-pulse"></div>
-                {/* Video indicator */}
-                <div className="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold animate-pulse">
-                  LIVE
+                {/* Enhanced video indicator */}
+                <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse shadow-lg">
+                  ● LIVE
                 </div>
               </div>
             )}
@@ -390,10 +412,10 @@ const ReceptionSlideshow = () => {
         ))}
       </div>
 
-      {/* Progress Bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-30">
+      {/* Enhanced Progress Bar with animation */}
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/20 z-30">
         <div 
-          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-[5000ms] ease-linear"
+          className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-[6000ms] ease-linear animate-pulse"
           style={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}
         ></div>
       </div>
