@@ -5,7 +5,7 @@ const ReceptionSlideshow = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Images array with your uploaded BMRS school images
+  // Images array with all uploaded BMRS school images
   const images = [
     {
       type: 'image',
@@ -51,6 +51,16 @@ const ReceptionSlideshow = () => {
       type: 'image',
       src: '/images/slide9.png',
       alt: 'BMRS sports and competition achievements'
+    },
+    {
+      type: 'image',
+      src: '/images/slide10.png',
+      alt: 'BMRS Grammar High School promotional banner'
+    },
+    {
+      type: 'image',
+      src: '/images/slide11.png',
+      alt: 'BMRS SSC Toppers 2024-2025 congratulations'
     }
   ];
 
