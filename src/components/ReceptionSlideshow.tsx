@@ -350,7 +350,8 @@ const ReceptionSlideshow = () => {
                   loading="lazy"
                   onError={(e) => {
                     console.log(`Failed to load image: ${slide.src}`);
-                    e.target.style.display = 'none';
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
                   }}
                 />
                 {/* Animated gradient overlay */}
@@ -373,7 +374,8 @@ const ReceptionSlideshow = () => {
                   playsInline
                   onError={(e) => {
                     console.log(`Failed to load video: ${slide.src}`);
-                    e.target.style.display = 'none';
+                    const target = e.target as HTMLVideoElement;
+                    target.style.display = 'none';
                   }}
                 />
                 {/* Video overlay with subtle animation */}
