@@ -156,10 +156,11 @@ const ReceptionSlideshow = () => {
         
         if (loadedSlides.length > 0) {
           setSlides(loadedSlides);
+          console.log(`Successfully loaded ${loadedSlides.length} slides for slideshow`);
           // Set 5 second delay before showing slideshow
           setTimeout(() => {
             setIsLoaded(true);
-            console.log(`Successfully loaded ${loadedSlides.length} slides for slideshow`);
+            console.log('Loading complete, showing slideshow');
           }, 5000);
         } else {
           console.error('No slides could be loaded');
@@ -189,7 +190,7 @@ const ReceptionSlideshow = () => {
   }, [loadAvailableMedia]);
 
   useEffect(() => {
-    if (slides.length === 0) return;
+    if (slides.length === 0 || !isLoaded) return;
 
     const interval = setInterval(() => {
       setIsTransitioning(true);
@@ -203,9 +204,9 @@ const ReceptionSlideshow = () => {
     }, 6000); // 6 seconds per slide
 
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [slides.length, isLoaded]);
 
-  // Clean loading screen - 5 seconds only
+  // Beautiful loading screen with bouncing logo
   if (!isLoaded) {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center">
@@ -214,15 +215,20 @@ const ReceptionSlideshow = () => {
             <img 
               src="/lovable-uploads/e4807246-51a8-4ba1-97cb-f11ee4b3fe66.png"
               alt="BMRS Schools Logo"
-              className="w-32 h-32 mx-auto mb-4 rounded-full shadow-xl"
+              className="w-32 h-32 mx-auto mb-4 rounded-full shadow-xl animate-bounce"
             />
           </div>
-          <h1 className="text-6xl font-bold text-blue-600 mb-4">
+          <h1 className="text-6xl font-bold text-blue-600 mb-4 animate-pulse">
             BMRS Schools
           </h1>
-          <p className="text-2xl text-gray-600">
+          <p className="text-2xl text-gray-600 animate-fade-in">
             Loading your visual journey...
           </p>
+          <div className="mt-8 flex justify-center">
+            <div className="w-16 h-1 bg-blue-200 rounded-full overflow-hidden">
+              <div className="w-full h-full bg-blue-600 rounded-full animate-pulse"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -292,7 +298,7 @@ const ReceptionSlideshow = () => {
   return (
     <div className="fixed inset-0 bg-black overflow-hidden">
       
-      {/* Clean School Logo */}
+      {/* School Logo */}
       <div className="absolute top-8 left-8 z-20">
         <div className="w-24 h-24 rounded-full bg-white/95 shadow-lg overflow-hidden flex items-center justify-center">
           <img 
@@ -303,7 +309,7 @@ const ReceptionSlideshow = () => {
         </div>
       </div>
 
-      {/* Clean Welcome Message */}
+      {/* Welcome Message */}
       <div className="absolute bottom-8 left-8 right-8 z-20 text-center">
         <div className="bg-white/95 rounded-3xl px-8 py-6 shadow-lg max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-800 mb-3">
@@ -315,7 +321,7 @@ const ReceptionSlideshow = () => {
         </div>
       </div>
 
-      {/* Clean Slideshow Container */}
+      {/* Slideshow Container */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
           <div
