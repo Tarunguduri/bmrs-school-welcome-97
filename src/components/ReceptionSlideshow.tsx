@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 
 const ReceptionSlideshow = () => {
@@ -25,6 +26,46 @@ const ReceptionSlideshow = () => {
       type: 'image',
       src: '/images/slide4.png',
       alt: 'BMRS students in classroom activities'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/560b2ab8-4587-4b01-9398-c0198cb7be29.png',
+      alt: 'BMRS Group of Schools outdoor assembly'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/7771b6e2-93d3-433c-b259-1d0008818c1c.png',
+      alt: 'BMRS students with science projects and awards'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/db4821d2-ec23-468b-be87-4536cff32f1f.png',
+      alt: 'BMRS Grammar School SSC Toppers 2024-2025'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/09240cc6-8539-4792-a0bb-948b8dc2fbaf.png',
+      alt: 'BMRS martial arts achievements and competitions'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/52287f64-78ea-4d64-bef7-1d4178fb1887.png',
+      alt: 'BMRS Grammar High School promotional banner'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/37110f2e-ddde-43bf-add6-86b06ea45365.png',
+      alt: 'BMRS cultural dance performance by students'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/71adb750-cc43-4a40-af59-701e04d0f872.png',
+      alt: 'BMRS sports activities and competitions'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/7ab56fa5-a690-4852-b44e-39528fbc97d9.png',
+      alt: 'BMRS students on educational field trip to ISRO'
     },
     {
       type: 'image',
@@ -74,6 +115,21 @@ const ReceptionSlideshow = () => {
       type: 'video',
       src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
       alt: 'BMRS School Activities Video 2'
+    },
+    {
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4',
+      alt: 'BMRS School Activities Video 3'
+    },
+    {
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_7mb.mp4',
+      alt: 'BMRS School Activities Video 4'
+    },
+    {
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_10mb.mp4',
+      alt: 'BMRS School Activities Video 5'
     }
   ];
 
@@ -126,7 +182,7 @@ const ReceptionSlideshow = () => {
       <div className="absolute top-8 left-8 z-20">
         <div className="w-24 h-24 rounded-full bg-white shadow-lg overflow-hidden flex items-center justify-center">
           <img 
-            src="/images/logo.png"
+            src="/lovable-uploads/e4807246-51a8-4ba1-97cb-f11ee4b3fe66.png"
             alt="BMRS Schools Logo"
             className="w-full h-full object-cover object-center"
           />
