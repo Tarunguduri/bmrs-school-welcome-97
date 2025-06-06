@@ -5,39 +5,88 @@ const ReceptionSlideshow = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Mix of images and videos for the slideshow
-  const slides = [
+  // Images array with your uploaded BMRS school images
+  const images = [
     {
       type: 'image',
-      src: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-      alt: 'Happy children learning together'
+      src: '/images/slide1.png',
+      alt: 'BMRS School cultural dance performance'
     },
     {
       type: 'image', 
-      src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-      alt: 'Teacher helping student with studies'
+      src: '/images/slide2.png',
+      alt: 'BMRS students on educational field trip'
     },
     {
       type: 'image',
-      src: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-      alt: 'Beautiful school environment'
+      src: '/images/slide3.png',
+      alt: 'BMRS school assembly and activities'
     },
     {
       type: 'image',
-      src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-      alt: 'Peaceful school grounds'
+      src: '/images/slide4.png',
+      alt: 'BMRS students in classroom activities'
     },
     {
       type: 'image',
-      src: 'https://images.unsplash.com/photo-1517022812141-23620dba5c23?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-      alt: 'Children playing outdoors'
+      src: '/images/slide5.png',
+      alt: 'BMRS students showcasing their projects'
     },
     {
       type: 'image',
-      src: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-      alt: 'Nature around school'
+      src: '/images/slide6.png',
+      alt: 'BMRS students with science projects'
+    },
+    {
+      type: 'image',
+      src: '/images/slide7.png',
+      alt: 'BMRS achievement ceremony'
+    },
+    {
+      type: 'image',
+      src: '/images/slide8.png',
+      alt: 'BMRS student expo presentation'
+    },
+    {
+      type: 'image',
+      src: '/images/slide9.png',
+      alt: 'BMRS sports and competition achievements'
     }
   ];
+
+  // Videos array - these will be inserted after every 4 images
+  const videos = [
+    {
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+      alt: 'BMRS School Activities Video 1'
+    },
+    {
+      type: 'video',
+      src: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
+      alt: 'BMRS School Activities Video 2'
+    }
+  ];
+
+  // Create combined slides array with videos inserted after every 4 images
+  const createCombinedSlides = () => {
+    const combined = [];
+    let videoIndex = 0;
+    
+    for (let i = 0; i < images.length; i++) {
+      combined.push(images[i]);
+      
+      // Add video after every 4 images
+      if ((i + 1) % 4 === 0 && videoIndex < videos.length) {
+        combined.push(videos[videoIndex]);
+        videoIndex++;
+      }
+    }
+    
+    return combined;
+  };
+
+  const slides = createCombinedSlides();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -106,7 +155,7 @@ const ReceptionSlideshow = () => {
                 src={slide.src}
                 className="w-full h-full object-cover"
                 autoPlay
-                muted
+                muted={false}
                 loop
                 playsInline
               />
@@ -116,22 +165,6 @@ const ReceptionSlideshow = () => {
             <div className="absolute inset-0 bg-black/10"></div>
           </div>
         ))}
-      </div>
-
-      {/* Slide Indicators */}
-      <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="flex space-x-2">
-          {slides.map((_, index) => (
-            <div
-              key={index}
-              className={`w-3 h-3 rounded-full transition-all duration-500 ${
-                index === currentSlide 
-                  ? 'bg-white scale-125' 
-                  : 'bg-white/50'
-              }`}
-            />
-          ))}
-        </div>
       </div>
     </div>
   );
