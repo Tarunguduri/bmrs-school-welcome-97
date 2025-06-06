@@ -64,10 +64,13 @@ const ReceptionSlideshow = () => {
 
   return (
     <div className="fixed inset-0 bg-black overflow-hidden">
-      {/* School Logo/Branding Overlay */}
-      <div className="absolute top-8 left-8 z-20 bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg">
-        <h1 className="text-3xl font-bold text-blue-600">BMRS Schools</h1>
-        <p className="text-sm text-gray-600">Welcome to our community</p>
+      {/* School Logo Overlay */}
+      <div className="absolute top-8 left-8 z-20">
+        <img 
+          src="/lovable-uploads/ec5f6440-5f44-4cf0-801c-264b3d5fa7f4.png"
+          alt="BMRS Schools Logo"
+          className="w-24 h-24 rounded-full shadow-lg bg-white/90 backdrop-blur-sm p-2"
+        />
       </div>
 
       {/* Welcome Message Overlay */}
@@ -76,8 +79,8 @@ const ReceptionSlideshow = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             Welcome to BMRS Group of Schools
           </h2>
-          <p className="text-gray-600">
-            Where every child's journey begins with love, learning, and limitless possibilities
+          <p className="text-gray-600 text-lg">
+            A Partnership For Your Child's Success
           </p>
         </div>
       </div>
