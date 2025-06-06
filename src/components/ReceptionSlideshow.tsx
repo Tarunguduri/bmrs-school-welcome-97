@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 const ReceptionSlideshow = () => {
@@ -125,11 +124,13 @@ const ReceptionSlideshow = () => {
     <div className="fixed inset-0 bg-black overflow-hidden">
       {/* School Logo Overlay */}
       <div className="absolute top-8 left-8 z-20">
-        <img 
-          src="/lovable-uploads/ec5f6440-5f44-4cf0-801c-264b3d5fa7f4.png"
-          alt="BMRS Schools Logo"
-          className="w-24 h-24 rounded-full shadow-lg bg-white/90 backdrop-blur-sm p-2"
-        />
+        <div className="w-24 h-24 rounded-full bg-white shadow-lg overflow-hidden flex items-center justify-center">
+          <img 
+            src="/images/logo.png"
+            alt="BMRS Schools Logo"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
       </div>
 
       {/* Welcome Message Overlay */}
