@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import LoadingScreen from './LoadingScreen';
 import SlideImage from './SlideImage';
@@ -19,16 +18,33 @@ const ReceptionSlideshow = () => {
     const initializeSlideshow = async () => {
       try {
         console.log('Initializing slideshow...');
+        
+        // Set maximum timeout of 8 seconds
+        const maxTimeout = setTimeout(() => {
+          console.log('Maximum loading time reached, forcing slideshow start');
+          if (!isLoaded) {
+            // Use fallback slides if loading takes too long
+            setSlides([
+              { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
+              { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' }
+            ]);
+            setIsLoaded(true);
+          }
+        }, 8000);
+
         const loadedSlides = await loadAvailableMedia();
+        
+        // Clear the timeout if loading completes
+        clearTimeout(maxTimeout);
         
         if (loadedSlides.length > 0) {
           setSlides(loadedSlides);
           console.log(`Successfully loaded ${loadedSlides.length} slides for slideshow`);
-          // Set 5 second delay before showing slideshow
+          // Set 3 second delay before showing slideshow (reduced from 5 seconds)
           setTimeout(() => {
             setIsLoaded(true);
             console.log('Loading complete, showing slideshow');
-          }, 5000);
+          }, 3000);
         } else {
           console.error('No slides could be loaded');
           // Force load with default slides if nothing else works
@@ -38,7 +54,7 @@ const ReceptionSlideshow = () => {
           ]);
           setTimeout(() => {
             setIsLoaded(true);
-          }, 5000);
+          }, 3000);
         }
       } catch (error) {
         console.error('Error initializing slideshow:', error);
@@ -49,12 +65,12 @@ const ReceptionSlideshow = () => {
         ]);
         setTimeout(() => {
           setIsLoaded(true);
-        }, 5000);
+        }, 3000);
       }
     };
 
     initializeSlideshow();
-  }, []);
+  }, [isLoaded]);
 
   useEffect(() => {
     if (slides.length === 0 || !isLoaded) return;
