@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 
 const ReceptionSlideshow = () => {
@@ -155,8 +156,11 @@ const ReceptionSlideshow = () => {
         
         if (loadedSlides.length > 0) {
           setSlides(loadedSlides);
-          setIsLoaded(true);
-          console.log(`Successfully loaded ${loadedSlides.length} slides for slideshow`);
+          // Set 5 second delay before showing slideshow
+          setTimeout(() => {
+            setIsLoaded(true);
+            console.log(`Successfully loaded ${loadedSlides.length} slides for slideshow`);
+          }, 5000);
         } else {
           console.error('No slides could be loaded');
           // Force load with default slides if nothing else works
@@ -164,7 +168,9 @@ const ReceptionSlideshow = () => {
             { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
             { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' }
           ]);
-          setIsLoaded(true);
+          setTimeout(() => {
+            setIsLoaded(true);
+          }, 5000);
         }
       } catch (error) {
         console.error('Error initializing slideshow:', error);
@@ -173,25 +179,13 @@ const ReceptionSlideshow = () => {
           { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
           { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' }
         ]);
-        setIsLoaded(true);
+        setTimeout(() => {
+          setIsLoaded(true);
+        }, 5000);
       }
     };
 
-    // Add a timeout to prevent infinite loading
-    const loadingTimeout = setTimeout(() => {
-      if (!isLoaded) {
-        console.log('Loading timeout - forcing slideshow to start with default slides');
-        setSlides([
-          { type: 'image', src: '/images/slide1.png', alt: 'BMRS School cultural dance performance' },
-          { type: 'image', src: '/images/slide2.png', alt: 'BMRS students on educational field trip' }
-        ]);
-        setIsLoaded(true);
-      }
-    }, 10000); // 10 second timeout
-
     initializeSlideshow();
-
-    return () => clearTimeout(loadingTimeout);
   }, [loadAvailableMedia]);
 
   useEffect(() => {
@@ -205,42 +199,29 @@ const ReceptionSlideshow = () => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
         setNextSlide((prev) => (prev + 1) % slides.length);
         setIsTransitioning(false);
-      }, 800); // Increased transition time for smoother animations
+      }, 800);
     }, 6000); // 6 seconds per slide
 
     return () => clearInterval(interval);
   }, [slides.length]);
 
-  // Enhanced loading screen with animations
+  // Clean loading screen - 5 seconds only
   if (!isLoaded) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-300/20 rounded-full animate-pulse animation-delay-0"></div>
-          <div className="absolute top-1/2 right-1/4 w-48 h-48 bg-purple-300/20 rounded-full animate-pulse animation-delay-1000"></div>
-          <div className="absolute bottom-1/4 left-1/2 w-32 h-32 bg-pink-300/20 rounded-full animate-pulse animation-delay-2000"></div>
-        </div>
-        <div className="text-center animate-fade-in relative z-10">
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center">
+        <div className="text-center">
           <div className="mb-8">
             <img 
               src="/lovable-uploads/e4807246-51a8-4ba1-97cb-f11ee4b3fe66.png"
               alt="BMRS Schools Logo"
-              className="w-32 h-32 mx-auto mb-4 animate-bounce rounded-full shadow-xl"
+              className="w-32 h-32 mx-auto mb-4 rounded-full shadow-xl"
             />
           </div>
-          <h1 className="text-6xl font-bold text-blue-600 mb-4 animate-fade-in animation-delay-500">
+          <h1 className="text-6xl font-bold text-blue-600 mb-4">
             BMRS Schools
           </h1>
-          <p className="text-2xl text-gray-600 animate-fade-in animation-delay-1000">
+          <p className="text-2xl text-gray-600">
             Loading your visual journey...
-          </p>
-          <div className="mt-8 flex justify-center space-x-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
-            <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce animation-delay-200"></div>
-            <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce animation-delay-400"></div>
-          </div>
-          <p className="text-sm text-gray-500 mt-4">
-            Scanning for images and videos...
           </p>
         </div>
       </div>
@@ -310,52 +291,31 @@ const ReceptionSlideshow = () => {
 
   return (
     <div className="fixed inset-0 bg-black overflow-hidden">
-      {/* Enhanced Animated Background Overlay */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-purple-900/10 animate-pulse"></div>
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500/5 rounded-full animate-bounce animation-delay-0"></div>
-          <div className="absolute top-20 right-20 w-24 h-24 bg-purple-500/5 rounded-full animate-bounce animation-delay-1000"></div>
-          <div className="absolute bottom-20 left-20 w-20 h-20 bg-pink-500/5 rounded-full animate-bounce animation-delay-2000"></div>
-        </div>
-      </div>
       
-      {/* Enhanced School Logo Overlay with more animations */}
-      <div className="absolute top-8 left-8 z-20 animate-fade-in">
-        <div className="w-24 h-24 rounded-full bg-white/95 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center hover:scale-110 transition-all duration-500 ring-4 ring-white/50 animate-pulse">
+      {/* Clean School Logo */}
+      <div className="absolute top-8 left-8 z-20">
+        <div className="w-24 h-24 rounded-full bg-white/95 shadow-lg overflow-hidden flex items-center justify-center">
           <img 
             src="/lovable-uploads/e4807246-51a8-4ba1-97cb-f11ee4b3fe66.png"
             alt="BMRS Schools Logo"
-            className="w-full h-full object-cover object-center transition-transform duration-500 hover:rotate-12"
+            className="w-full h-full object-cover object-center"
           />
         </div>
       </div>
 
-      {/* Enhanced Slide Counter with animation */}
-      <div className="absolute top-8 right-8 z-20 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg animate-fade-in hover:scale-105 transition-all duration-300">
-        <span className="text-sm font-medium text-gray-800">
-          {currentSlide + 1} / {slides.length}
-        </span>
-      </div>
-
-      {/* Enhanced Welcome Message Overlay with more animations */}
-      <div className="absolute bottom-8 left-8 right-8 z-20 text-center animate-fade-in animation-delay-500">
-        <div className="bg-white/95 backdrop-blur-md rounded-3xl px-8 py-6 shadow-2xl max-w-2xl mx-auto border border-white/50 hover:scale-105 transition-all duration-500 animate-pulse">
-          <h2 className="text-3xl font-bold text-gray-800 mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      {/* Clean Welcome Message */}
+      <div className="absolute bottom-8 left-8 right-8 z-20 text-center">
+        <div className="bg-white/95 rounded-3xl px-8 py-6 shadow-lg max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-800 mb-3">
             Welcome to BMRS Group of Schools
           </h2>
-          <p className="text-gray-600 text-lg leading-relaxed">
+          <p className="text-gray-600 text-lg">
             A Partnership For Your Child's Success
           </p>
-          <div className="mt-4 flex justify-center space-x-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-200"></div>
-            <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse animation-delay-400"></div>
-          </div>
         </div>
       </div>
 
-      {/* Enhanced Slideshow Container with better animations */}
+      {/* Clean Slideshow Container */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
           <div
@@ -363,11 +323,11 @@ const ReceptionSlideshow = () => {
             className={`absolute inset-0 ${getAnimationClass(index, currentAnimation)}`}
           >
             {slide.type === 'image' ? (
-              <div className="relative w-full h-full group">
+              <div className="relative w-full h-full">
                 <img
                   src={slide.src}
                   alt={slide.alt}
-                  className="w-full h-full object-cover transition-transform duration-[12s] ease-linear group-hover:scale-105"
+                  className="w-full h-full object-cover"
                   loading="lazy"
                   onError={(e) => {
                     console.log(`Failed to load image: ${slide.src}`);
@@ -375,15 +335,6 @@ const ReceptionSlideshow = () => {
                     target.style.display = 'none';
                   }}
                 />
-                {/* Enhanced animated gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 opacity-60 animate-pulse"></div>
-                {/* Enhanced floating particles effect */}
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-bounce animation-delay-0"></div>
-                  <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white/40 rounded-full animate-bounce animation-delay-1000"></div>
-                  <div className="absolute bottom-1/4 left-1/2 w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce animation-delay-2000"></div>
-                  <div className="absolute top-1/2 left-1/6 w-1 h-1 bg-white/25 rounded-full animate-bounce animation-delay-3000"></div>
-                </div>
               </div>
             ) : (
               <div className="relative w-full h-full">
@@ -400,24 +351,10 @@ const ReceptionSlideshow = () => {
                     target.style.display = 'none';
                   }}
                 />
-                {/* Enhanced video overlay with animation */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-purple-900/10 animate-pulse"></div>
-                {/* Enhanced video indicator */}
-                <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse shadow-lg">
-                  ● LIVE
-                </div>
               </div>
             )}
           </div>
         ))}
-      </div>
-
-      {/* Enhanced Progress Bar with animation */}
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/20 z-30">
-        <div 
-          className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-[6000ms] ease-linear animate-pulse"
-          style={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}
-        ></div>
       </div>
     </div>
   );
