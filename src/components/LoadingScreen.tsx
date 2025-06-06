@@ -16,7 +16,7 @@ const LoadingScreen = () => {
           BMRS Schools
         </h1>
         <p className="text-2xl text-gray-600 animate-fade-in">
-          Loading your visual journey...
+          ReView AI is loading...
         </p>
         <div className="mt-8 flex justify-center">
           <div className="w-16 h-1 bg-blue-200 rounded-full overflow-hidden">
